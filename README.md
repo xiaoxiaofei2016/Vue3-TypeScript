@@ -1,34 +1,6 @@
-# vues-json-schema-form
-
-## Project setup
-```
-yarn install
-```
-
-### Compiles and hot-reloads for development
-```
-yarn serve
-```
-
-### Compiles and minifies for production
-```
-yarn build
-```
-
-### Run your unit tests
-```
-yarn test:unit
-```
-
-### Run your end-to-end tests
-```
-yarn test:e2e
-```
-
-### Lints and fixes files
-```
-yarn lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## 单元测试
+- yarn test:unit -- --coverage 生成单元测试报告
+- Stmts 语句覆盖率
+- Branch 判断覆盖率（if/else）
+- Funcs 函数覆盖率
+- Lines 行覆盖率
