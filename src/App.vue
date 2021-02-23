@@ -1,10 +1,50 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
+  <div class="container">
+    <global-header :user="userInfo"></global-header>
+    <column-list :list="list"></column-list>
   </div>
-  <router-view/>
 </template>
+
+<script lang="ts">
+import { defineComponent } from 'vue'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import ColumnList, { ColumnProps } from '@/components/ColumnList.vue'
+import GlobalHeader, { UserProps } from '@/components/GlobalHeader.vue'
+
+const userInfo: UserProps = {
+  isLogin: true,
+  nickName: 'dufajun'
+}
+
+const testData: ColumnProps[] = [
+  {
+    id: 1,
+    title: 'test1的专栏',
+    description: '这是专栏1',
+    avatar: 'https://img3.sycdn.imooc.com/5b8ce66d00010a5202000190-140-14.jpg'
+  },
+  {
+    id: 2,
+    title: 'test2的专栏',
+    description: '这是专栏2',
+    avatar: ''
+  }
+]
+
+export default defineComponent({
+  name: 'App',
+  components: {
+    ColumnList,
+    GlobalHeader
+  },
+  setup () {
+    return {
+      list: testData,
+      userInfo: userInfo
+    }
+  }
+})
+</script>
 
 <style>
 #app {
