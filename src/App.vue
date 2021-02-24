@@ -2,14 +2,17 @@
   <div class="container">
     <global-header :user="userInfo"></global-header>
     <column-list :list="list"></column-list>
+    <validate-input :rule="emailMsg" v-model="email" type="password" placeholder="请输入邮箱地址"></validate-input>
+    {{email}}
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import ColumnList, { ColumnProps } from '@/components/ColumnList.vue'
 import GlobalHeader, { UserProps } from '@/components/GlobalHeader.vue'
+import ValidateInput, { RuleProp } from '@/components/ValidateInput.vue'
 
 const userInfo: UserProps = {
   isLogin: true,
@@ -31,16 +34,30 @@ const testData: ColumnProps[] = [
   }
 ]
 
+const emailMsg: RuleProp[] = [
+  {
+    type: 'required', message: '不能为空'
+  },
+  {
+    type: 'email', message: '请输入正确的邮箱格式'
+  }
+]
+
 export default defineComponent({
   name: 'App',
   components: {
     ColumnList,
-    GlobalHeader
+    GlobalHeader,
+    ValidateInput
   },
   setup () {
+    const email = ref('')
+
     return {
       list: testData,
-      userInfo: userInfo
+      userInfo,
+      emailMsg,
+      email
     }
   }
 })
