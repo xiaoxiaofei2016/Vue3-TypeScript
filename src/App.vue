@@ -1,63 +1,40 @@
 <template>
   <div class="container">
     <global-header :user="userInfo"></global-header>
-    <column-list :list="list"></column-list>
-    <validate-input :rule="emailMsg" v-model="email" type="password" placeholder="请输入邮箱地址"></validate-input>
-    {{email}}
+    <router-view/>
+    <footer class="text-center py-4 text-secondary bg-light mt-6">
+      <small>
+        <ul class="list-inline mb-0">
+          <li class="list-inline-item">© 2020 知乎专栏</li>
+          <li class="list-inline-item">课程</li>
+          <li class="list-inline-item">文档</li>
+          <li class="list-inline-item">联系</li>
+          <li class="list-inline-item">更多</li>
+        </ul>
+      </small>
+    </footer>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent } from 'vue'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import ColumnList, { ColumnProps } from '@/components/ColumnList.vue'
+
 import GlobalHeader, { UserProps } from '@/components/GlobalHeader.vue'
-import ValidateInput, { RuleProp } from '@/components/ValidateInput.vue'
 
 const userInfo: UserProps = {
-  isLogin: true,
+  isLogin: false,
   nickName: 'dufajun'
 }
-
-const testData: ColumnProps[] = [
-  {
-    id: 1,
-    title: 'test1的专栏',
-    description: '这是专栏1',
-    avatar: 'https://img3.sycdn.imooc.com/5b8ce66d00010a5202000190-140-14.jpg'
-  },
-  {
-    id: 2,
-    title: 'test2的专栏',
-    description: '这是专栏2',
-    avatar: ''
-  }
-]
-
-const emailMsg: RuleProp[] = [
-  {
-    type: 'required', message: '不能为空'
-  },
-  {
-    type: 'email', message: '请输入正确的邮箱格式'
-  }
-]
 
 export default defineComponent({
   name: 'App',
   components: {
-    ColumnList,
-    GlobalHeader,
-    ValidateInput
+    GlobalHeader
   },
   setup () {
-    const email = ref('')
-
     return {
-      list: testData,
-      userInfo,
-      emailMsg,
-      email
+      userInfo
     }
   }
 })

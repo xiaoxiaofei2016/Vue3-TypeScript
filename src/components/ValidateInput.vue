@@ -6,7 +6,7 @@
       :class="{'is-invalid': inputRef.error}"
       @blur="validateInput"
       @input="inputChange"
-      :value="inputRef.val"
+      v-model="inputRef.val"
       v-bind="$attrs"
     >
     <textarea
@@ -23,7 +23,8 @@
 </template>
 
 <script lang='ts'>
-import { defineComponent, PropType, reactive } from 'vue'
+import { defineComponent, onMounted, PropType, reactive } from 'vue'
+import { emitter } from './ValidateForm.vue'
 
 const emailReg = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
 
@@ -38,11 +39,12 @@ export default defineComponent({
       type: Array as PropType<RuleProp[]>,
       default: () => ([])
     },
-    modelValue: String
+    modelValue: String,
+    tag: String
   },
   // inheritAttrs :false可以取消除props外的属性继承在跟组件
   inheritAttrs: false,
-  setup (props, { slots, attrs, emit }) {
+  setup (props, { emit }) {
     const inputRef = reactive({
       val: props.modelValue || '',
       error: false,
@@ -71,7 +73,9 @@ export default defineComponent({
           return isPassed
         })
         inputRef.error = !allPassed
+        return allPassed
       }
+      return true
     }
 
     const inputChange = (e: KeyboardEvent) => {
@@ -79,6 +83,10 @@ export default defineComponent({
       inputRef.val = targetValue
       emit('update:modelValue', targetValue)
     }
+
+    onMounted(() => {
+      emitter.emit('form-item-created', validateInput)
+    })
 
     return {
       inputRef,
