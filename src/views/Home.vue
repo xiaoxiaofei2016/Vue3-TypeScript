@@ -24,23 +24,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
-import ColumnList, { ColumnProps } from '@/components/ColumnList.vue'
+import { computed, defineComponent, ref } from 'vue'
+import ColumnList from '@/components/ColumnList.vue'
+import { useStore } from 'vuex'
+import { ColumnProps, PostProps, UserProps } from '@/mock/type'
 
-const testData: ColumnProps[] = [
-  {
-    id: 1,
-    title: 'test1的专栏',
-    description: '这是专栏1',
-    avatar: 'https://img3.sycdn.imooc.com/5b8ce66d00010a5202000190-140-14.jpg'
-  },
-  {
-    id: 2,
-    title: 'test2的专栏',
-    description: '这是专栏2',
-    avatar: ''
-  }
-]
+export interface GlobalDataProps {
+  column: ColumnProps[];
+  posts: PostProps[];
+  user: UserProps;
+}
 
 export default defineComponent({
   name: 'Home',
@@ -49,9 +42,11 @@ export default defineComponent({
   },
   setup () {
     const loadMorePage = ref(false)
+    const store = useStore<GlobalDataProps>()
+    const list = computed(() => store.state.column)
 
     return {
-      list: testData,
+      list,
       loadMorePage
     }
   }

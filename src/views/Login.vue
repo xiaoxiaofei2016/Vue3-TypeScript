@@ -5,7 +5,7 @@
       <div class="mb-3">
         <label class="form-label">邮箱地址</label>
         <validate-input
-          :rules="emailRules" v-model="emailVal"
+          :rule="emailRules" v-model="emailVal"
           placeholder="请输入邮箱地址"
           type="text"
           ref="inputRef"
@@ -16,7 +16,7 @@
         <validate-input
           type="password"
           placeholder="请输入密码"
-          :rules="passwordRules"
+          :rule="passwordRules"
           v-model="passwordVal"
         />
       </div>
@@ -28,11 +28,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { computed, defineComponent, ref } from 'vue'
 import ValidateInput, { RuleProp } from '@/components/ValidateInput.vue'
 import ValidateForm from '@/components/ValidateForm.vue'
+import { mapMutations, useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 
-const emailMsg: RuleProp[] = [
+const emailRules: RuleProp[] = [
   {
     type: 'required', message: '不能为空'
   },
@@ -41,7 +43,7 @@ const emailMsg: RuleProp[] = [
   }
 ]
 
-const passwordMsg: RuleProp[] = [
+const passwordRules: RuleProp[] = [
   {
     type: 'required', message: '不能为空'
   }
@@ -56,12 +58,18 @@ export default defineComponent({
   setup () {
     const emailVal = ref('11')
     const passwordVal = ref('2223')
-    const onFormSubmit = () => {
-      console.log('提交啦')
+    const store = useStore()
+    const router = useRouter()
+
+    const onFormSubmit = (res: boolean) => {
+      console.log(res, 'res')
+      if (!res) return
+      store.commit('login')
+      router.push('/')
     }
     return {
-      emailRules: emailMsg,
-      passwordRules: passwordMsg,
+      emailRules,
+      passwordRules,
       passwordVal,
       emailVal,
       onFormSubmit
