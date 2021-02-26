@@ -18,10 +18,31 @@ export default createStore<GlobalDataProps>({
   },
   mutations: {
     login (state) {
-      state.user = { ...state.user, isLogin: true, name: 'dufajun' }
+      state.user = {
+        ...state.user,
+        isLogin: true,
+        name: 'dufajun',
+        columnId: 1
+      }
+    },
+    loseLogin (state) {
+      state.user = {
+        isLogin: false
+      }
+    },
+    createPost (state, data) {
+      state.posts.push(data)
     }
   },
   actions: {
+  },
+  getters: {
+    getColumnListById: (state) => (id: number) => {
+      return state.column.find(c => c.id === id)
+    },
+    getPostsListById: (state) => (id: number) => {
+      return state.posts.filter(post => post.columnId === id)
+    }
   },
   modules: {
   }

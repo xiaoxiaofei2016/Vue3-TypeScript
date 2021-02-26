@@ -5,7 +5,8 @@
       <div class="mb-3">
         <label class="form-label">邮箱地址</label>
         <validate-input
-          :rule="emailRules" v-model="emailVal"
+          :rule="emailRules"
+          v-model="emailVal"
           placeholder="请输入邮箱地址"
           type="text"
           ref="inputRef"
@@ -28,10 +29,10 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue'
+import { defineComponent, ref } from 'vue'
 import ValidateInput, { RuleProp } from '@/components/ValidateInput.vue'
 import ValidateForm from '@/components/ValidateForm.vue'
-import { mapMutations, useStore } from 'vuex'
+import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 
 const emailRules: RuleProp[] = [
@@ -56,7 +57,7 @@ export default defineComponent({
     ValidateInput
   },
   setup () {
-    const emailVal = ref('11')
+    const emailVal = ref('')
     const passwordVal = ref('2223')
     const store = useStore()
     const router = useRouter()

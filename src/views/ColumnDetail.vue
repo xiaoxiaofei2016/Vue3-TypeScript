@@ -16,23 +16,24 @@
 <script lang='ts'>
 import { defineComponent, PropType, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { testData, testPosts } from '@/mock/testData'
 import PostList from '@/components/PostList.vue'
+import { useStore } from 'vuex'
 
 export default defineComponent({
   name: '',
   components: {
     PostList
   },
-  setup (props, { slots, attrs, emit }) {
+  setup () {
     const route = useRoute()
+    const store = useStore()
 
     const currentId = +route.params.id
     const column = computed(() => {
-      return testData.find(c => c.id === currentId)
+      return store.getters.getColumnListById(currentId)
     })
     const list = computed(() => {
-      return testPosts.filter(post => post.columnId === currentId)
+      return store.getters.getPostsListById(currentId)
     })
 
     return {

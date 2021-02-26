@@ -32,6 +32,7 @@ export interface RuleProp {
   type: 'required' | 'email';
   message: string;
 }
+export type tagType = 'input' | 'textarea'
 export default defineComponent({
   name: 'ValidateInput',
   props: {
@@ -40,7 +41,10 @@ export default defineComponent({
       default: () => ([])
     },
     modelValue: String,
-    tag: String
+    tag: {
+      type: String as PropType<tagType>,
+      default: 'input'
+    }
   },
   // inheritAttrs :false可以取消除props外的属性继承在跟组件
   inheritAttrs: false,

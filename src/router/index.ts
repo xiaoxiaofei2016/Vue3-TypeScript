@@ -1,6 +1,8 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 import Home from '../views/Home.vue'
 
+const __import__ = (page: string) => () => import(`@/views/${page}.vue`)
+
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
@@ -13,7 +15,7 @@ const routes: Array<RouteRecordRaw> = [
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/Login.vue')
+    component: __import__('Login')
   },
   {
     path: '/column/:id',
@@ -21,7 +23,15 @@ const routes: Array<RouteRecordRaw> = [
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/ColumnDetail.vue')
+    component: __import__('ColumnDetail')
+  },
+  {
+    path: '/create',
+    name: 'CreatePost',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: __import__('PostCreate')
   },
   {
     path: '/post/:id',
@@ -29,7 +39,7 @@ const routes: Array<RouteRecordRaw> = [
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/PostDetail.vue')
+    component: __import__('PostDetail')
   }
 ]
 
