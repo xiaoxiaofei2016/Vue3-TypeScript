@@ -99,7 +99,6 @@ export default defineComponent({
       const { columnId } = store.state.user
       if (!columnId) return
       const newPost: PostProps = {
-        id: new Date().getTime(),
         title: titleVal.value,
         content: contentVal.value,
         columnId,

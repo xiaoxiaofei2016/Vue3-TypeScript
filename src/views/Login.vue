@@ -63,10 +63,14 @@ export default defineComponent({
     const router = useRouter()
 
     const onFormSubmit = (res: boolean) => {
-      console.log(res, 'res')
       if (!res) return
-      store.commit('login')
-      router.push('/')
+      store.dispatch('fetchAndLogin', {
+        email: emailVal.value,
+        password: passwordVal.value
+      }).then(res => {
+        console.log(res)
+        router.push('/')
+      })
     }
     return {
       emailRules,

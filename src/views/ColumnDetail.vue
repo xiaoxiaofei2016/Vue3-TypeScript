@@ -2,7 +2,7 @@
   <div class="column-detail-page w-75 mx-auto">
     <div class="column-info row mb-4 border-bottom pb-4 align-items-center" v-if="column">
       <div class="col-3 text-center">
-        <img :src="column.avatar" :alt="column.title" class="rounded-circle border w-100">
+        <img :src="column.avatar && column.avatar.url" :alt="column.title" class="rounded-circle border w-100">
       </div>
       <div class="col-9">
         <h4>{{column.title}}</h4>
@@ -14,10 +14,11 @@
 </template>
 
 <script lang='ts'>
-import { defineComponent, PropType, computed } from 'vue'
+import { defineComponent, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import PostList from '@/components/PostList.vue'
 import { useStore } from 'vuex'
+import { addColumnAvatar } from '@/utils'
 
 export default defineComponent({
   name: '',
@@ -28,12 +29,19 @@ export default defineComponent({
     const route = useRoute()
     const store = useStore()
 
-    const currentId = +route.params.id
+    const currentId = route.params.id
+
+    onMounted(() => {
+      store.dispatch('fetchColumn', currentId)
+      store.dispatch('fetchPosts', currentId)
+    })
     const column = computed(() => {
-      return store.getters.getColumnListById(currentId)
+      const data = store.getters.getColumnListById(currentId)
+      data && addColumnAvatar(data, 50, 50)
+      return data
     })
     const list = computed(() => {
-      return store.getters.getPostsListById(currentId)
+      return store.getters.getPostsListById
     })
 
     return {

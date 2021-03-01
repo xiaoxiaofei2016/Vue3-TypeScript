@@ -3,10 +3,10 @@
     <div v-for="(column, index) in columnList" :key="index" class="col-4 mb-4">
       <div class="card h-100 shadow-sm">
         <div class="card-body text-center">
-          <img :src="column.avatar" :alt="column.title" class="rounded-circle border border-light my-3">
+          <img :src="column.avatar.url" :alt="column.title" class="rounded-circle border border-light my-3">
           <h5 class="card-title">{{column.title}}</h5>
           <p class="card-text text-left">{{column.description}}</p>
-          <router-link :to="`/column/${column.id}`" class="btn btn-outline-primary">进入专栏</router-link>
+          <router-link :to="`/column/${column._id}`" class="btn btn-outline-primary">进入专栏</router-link>
         </div>
       </div>
     </div>
@@ -15,15 +15,9 @@
 
 <script lang="ts">
 import { PropType, defineComponent, computed } from 'vue'
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const avatarImg = require('@/assets/column.jpg')
+import { ColumnProps } from '@/mock/type'
+import { addColumnAvatar } from '@/utils/index'
 
-export interface ColumnProps {
-  id: number;
-  title: string;
-  avatar?: string;
-  description: string;
-}
 export default defineComponent({
   name: 'ColumnList',
   props: {
@@ -35,9 +29,7 @@ export default defineComponent({
   setup (props) {
     const columnList = computed(() => {
       return props.list.map(column => {
-        if (!column.avatar) {
-          column.avatar = avatarImg
-        }
+        addColumnAvatar(column, 50, 50)
         return column
       })
     })
@@ -49,6 +41,9 @@ export default defineComponent({
 })
 </script>
 
-<style>
-
+<style scoped>
+.card-body img {
+  width: 50px;
+  height: 50px;
+}
 </style>

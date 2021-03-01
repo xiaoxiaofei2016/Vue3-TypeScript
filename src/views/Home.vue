@@ -24,16 +24,10 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue'
+import { computed, defineComponent, onMounted, ref } from 'vue'
 import ColumnList from '@/components/ColumnList.vue'
 import { useStore } from 'vuex'
-import { ColumnProps, PostProps, UserProps } from '@/mock/type'
-
-export interface GlobalDataProps {
-  column: ColumnProps[];
-  posts: PostProps[];
-  user: UserProps;
-}
+import { GlobalDataProps } from '@/mock/type'
 
 export default defineComponent({
   name: 'Home',
@@ -44,6 +38,10 @@ export default defineComponent({
     const loadMorePage = ref(false)
     const store = useStore<GlobalDataProps>()
     const list = computed(() => store.state.column)
+
+    onMounted(() => {
+      store.dispatch('fetchColumns')
+    })
 
     return {
       list,

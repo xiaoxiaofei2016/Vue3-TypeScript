@@ -1,27 +1,44 @@
 export interface ColumnProps {
-  id: number;
+  _id: string;
   title: string;
-  avatar?: string;
+  avatar?: ImageProps;
   description: string;
 }
+
+export interface ImageProps {
+  url?: string;
+  _id?: string;
+  createdAt?: string;
+  fitUrl?: string;
+}
 export interface PostProps {
-  id: number;
+  _id?: string;
   title: string;
-  content: string;
-  image?: string;
-  createdAt: string;
-  columnId: number;
+  excerpt?: string;
+  content?: string;
+  image?: ImageProps;
+  createdAt?: string;
+  columnId: string;
 }
 
 export interface UserProps {
   isLogin: boolean;
-  name?: string;
-  id?: number;
-  columnId?: number;
+  nickName?: string;
+  _id?: string;
+  avatar?: ImageProps;
+  column?: number;
 }
 
-declare interface GlobalDataProps {
+export interface GlobalErrorProps {
+  message?: string;
+  status: boolean;
+}
+
+export interface GlobalDataProps {
+  error: GlobalErrorProps;
+  token: string;
   column: ColumnProps[];
   posts: PostProps[];
   user: UserProps;
+  loading: boolean;
 }

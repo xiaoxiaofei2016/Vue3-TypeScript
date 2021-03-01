@@ -1,6 +1,7 @@
 <template>
   <div class="container">
     <global-header :user="userInfo"></global-header>
+    <loader v-if="isLoading"></loader>
     <router-view/>
     <footer class="text-center py-4 text-secondary bg-light mt-6">
       <small>
@@ -17,24 +18,44 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, onMounted } from 'vue'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { useStore } from 'vuex'
+import Loader from '@/components/Loader.vue'
+import axios from 'axios'
 
 import GlobalHeader from '@/components/GlobalHeader.vue'
 
 export default defineComponent({
   name: 'App',
   components: {
-    GlobalHeader
+    GlobalHeader,
+    Loader
   },
   setup () {
     const store = useStore()
     const userInfo = computed(() => {
       return store.state.user
     })
+    const isLoading = computed(() => {
+      return store.state.loading
+    })
+    const token = computed(() => {
+      return store.state.token
+    })
+    const error = computed(() => {
+      return store.state.error
+    })
+    onMounted(() => {
+      if (!userInfo.value.isLogin && token.value) {
+        axios.defaults.headers.common.Authorization = `Bearer ${token.value}`
+        store.dispatch('fetchUserInfo')
+      }
+    })
     return {
-      userInfo
+      userInfo,
+      isLoading,
+      error
     }
   }
 })
