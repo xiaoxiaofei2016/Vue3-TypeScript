@@ -52,13 +52,15 @@
 </template>
 
 <script lang='ts'>
-import { defineComponent, ref, computed, PropType } from 'vue'
+import { defineComponent, ref, onMounted, PropType } from 'vue'
 import ValidateInput, { RuleProp } from '@/components/ValidateInput.vue'
 import ValidateForm from '@/components/ValidateForm.vue'
 import Uploader from '@/components/Uploader.vue'
 import { useRoute, useRouter } from 'vue-router'
+import { beforeUploadCheck } from '@/utils/index'
+import createMessage from '@/components/createMessage'
 
-import { PostProps } from '@/mock/type'
+import { PostProps, ResponseType, ImageProps } from '@/mock/type'
 import { useStore } from 'vuex'
 
 export default defineComponent({
@@ -74,6 +76,7 @@ export default defineComponent({
     const router = useRouter()
     const store = useStore()
     const isEditMode = !!route.query.id
+    let imageId = ''
 
     const titleVal = ref('')
     const contentVal = ref('')
@@ -86,30 +89,60 @@ export default defineComponent({
       { type: 'required', message: '文章详情不能为空' }
     ]
 
-    const uploadCheck = () => {
-      //
+    onMounted(() => {
+      if (isEditMode) {
+        store.dispatch('fetchPosts', route.query.id).then((rawData: ResponseType<PostProps>) => {
+          const currentPost = rawData.data
+          if (currentPost.image) {
+            uploadedData.value = { data: currentPost.image }
+          }
+          titleVal.value = currentPost.title
+          contentVal.value = currentPost.content || ''
+        })
+      }
+    })
+
+    const uploadCheck = (file: File) => {
+      const result = beforeUploadCheck(file, { format: ['image/jpeg', 'image/png'], size: 1 })
+      const { passed, error } = result
+      if (error === 'format') {
+        createMessage('上传图片只能是 JPG/PNG 格式!', 'error')
+      }
+      if (error === 'size') {
+        createMessage('上传图片大小不能超过 1Mb', 'error')
+      }
+      return passed
     }
 
-    const handleFileUploaded = () => {
-      //
+    const handleFileUploaded = (rawData: ResponseType<ImageProps>) => {
+      if (rawData.data._id) {
+        imageId = rawData.data._id
+      }
     }
 
     const onFormSubmit = (res: boolean) => {
       if (!res) return
-      const { columnId } = store.state.user
-      if (!columnId) return
+      const { column, _id } = store.state.user
+      if (!column) return
       const newPost: PostProps = {
         title: titleVal.value,
         content: contentVal.value,
-        columnId,
-        createdAt: new Date().toLocaleString()
+        column,
+        author: _id
       }
-      store.commit('createPost', newPost)
-      router.push({
-        name: 'ColumnDetail',
-        params: {
-          id: columnId
-        }
+      if (imageId) {
+        newPost.image = imageId
+      }
+      const actionName = isEditMode ? 'updatePost' : 'createPost'
+      const sendData = isEditMode ? {
+        id: route.query.id,
+        payload: newPost
+      } : newPost
+      store.dispatch(actionName, sendData).then(() => {
+        createMessage('发表成功，2秒后跳转到文章', 'success', 2000)
+        setTimeout(() => {
+          router.push({ name: 'column', params: { id: column } })
+        }, 2000)
       })
     }
     return {
@@ -119,7 +152,9 @@ export default defineComponent({
       contentVal,
       titleVal,
       uploadedData,
-      onFormSubmit
+      onFormSubmit,
+      uploadCheck,
+      handleFileUploaded
     }
   }
 })

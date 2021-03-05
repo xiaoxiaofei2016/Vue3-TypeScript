@@ -18,10 +18,11 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted } from 'vue'
+import { computed, defineComponent, onMounted, watch } from 'vue'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { useStore } from 'vuex'
 import Loader from '@/components/Loader.vue'
+import createMessage from './components/createMessage'
 import axios from 'axios'
 
 import GlobalHeader from '@/components/GlobalHeader.vue'
@@ -45,6 +46,12 @@ export default defineComponent({
     })
     const error = computed(() => {
       return store.state.error
+    })
+    watch(() => error.value.status, () => {
+      const { status, message } = error.value
+      if (status && message) {
+        createMessage(message, 'error')
+      }
     })
     onMounted(() => {
       if (!userInfo.value.isLogin && token.value) {

@@ -1,6 +1,7 @@
 import { createStore, Commit } from 'vuex'
 import { GlobalDataProps, GlobalErrorProps } from '@/mock/type'
 import axios, { AxiosRequestConfig } from 'axios'
+import { objToArr, arrToObj } from '@/utils/index.ts'
 
 const asyncAndCommit = async (url: string, mutationName: string,
   commit: Commit, config: AxiosRequestConfig = { method: 'get' }, extraData?: any) => {
@@ -16,8 +17,8 @@ const asyncAndCommit = async (url: string, mutationName: string,
 export default createStore<GlobalDataProps>({
   state: {
     error: { status: false },
-    column: [],
-    posts: [],
+    column: { data: {}, currentPage: 0, total: 0 },
+    posts: { data: {}, loadedColumns: [] },
     user: {
       isLogin: false
     },
@@ -25,22 +26,27 @@ export default createStore<GlobalDataProps>({
     token: localStorage.getItem('token') || ''
   },
   mutations: {
-    loseLogin (state) {
-      state.user = {
-        isLogin: false
+    createPost (state, data) {
+      state.posts.data[data._id] = data
+    },
+    fetchColumns (state, rawData) {
+      const { data } = state.column
+      const { list, count, currentPage } = rawData.data
+      state.column = {
+        data: { ...data, ...arrToObj(list) },
+        total: count,
+        currentPage: currentPage * 1
       }
     },
-    createPost (state, data) {
-      state.posts.push(data)
-    },
-    fetchColumns (state, data) {
-      state.column = data.data.list
-    },
     fetchColumn (state, data) {
-      state.column = [data.data]
+      state.column.data[data.data._id] = data.data
     },
-    fetchPosts (state, data) {
-      state.posts = data.data.list
+    fetchPosts (state, { data: rawData, extraData: columnId }) {
+      state.posts.data = { ...state.posts.data, ...arrToObj(rawData.data.list) }
+      state.posts.loadedColumns.push(columnId)
+    },
+    deletePost (state, { data }) {
+      delete state.posts.data[data._id]
     },
     setLoading (state, data) {
       state.loading = data
@@ -50,6 +56,12 @@ export default createStore<GlobalDataProps>({
       state.token = token
       localStorage.setItem('token', token)
       axios.defaults.headers.common.Authorization = `Bearer ${token}`
+    },
+    loseLogin (state) {
+      state.token = ''
+      state.user = { isLogin: false }
+      localStorage.removeItem('token')
+      delete axios.defaults.headers.common.Authorization
     },
     getUserInfo (state, data) {
       state.user = {
@@ -78,6 +90,18 @@ export default createStore<GlobalDataProps>({
     fetchUserInfo ({ commit }) {
       return asyncAndCommit('/user/current', 'getUserInfo', commit)
     },
+    createPost ({ commit }, payload) {
+      return asyncAndCommit('/posts', 'createPost', commit, { method: 'post', data: payload })
+    },
+    deletePost ({ commit }, id) {
+      return asyncAndCommit(`/posts/${id}`, 'deletePost', commit, { method: 'delete' })
+    },
+    updatePost ({ commit }, { id, payload }) {
+      return asyncAndCommit(`/posts/${id}`, 'updatePost', commit, {
+        method: 'patch',
+        data: payload
+      })
+    },
     fetchAndLogin ({ dispatch }, payload) {
       return dispatch('login', payload).then(() => {
         return dispatch('fetchUserInfo')
@@ -85,10 +109,18 @@ export default createStore<GlobalDataProps>({
     }
   },
   getters: {
-    getColumnListById: (state) => (id: string) => {
-      return state.column.find(c => c._id === id)
+    getColumns: (state) => {
+      return objToArr(state.column.data)
     },
-    getPostsListById: (state) => state.posts
+    getColumnListById: (state) => (id: string) => {
+      return state.column.data[id]
+    },
+    getPostsListById: (state) => (cid: string) => {
+      return objToArr(state.posts.data).filter(post => post.column === cid)
+    },
+    getCurrentPost: (state) => (id: string) => {
+      return state.posts.data[id]
+    }
   },
   modules: {
   }

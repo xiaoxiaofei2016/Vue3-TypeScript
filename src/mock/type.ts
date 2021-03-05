@@ -16,29 +16,42 @@ export interface PostProps {
   title: string;
   excerpt?: string;
   content?: string;
-  image?: ImageProps;
+  image?: ImageProps | string;
   createdAt?: string;
-  columnId: string;
+  column: string;
+  author: string | UserProps;
+  isHTML?: boolean;
 }
 
 export interface UserProps {
   isLogin: boolean;
   nickName?: string;
   _id?: string;
+  column?: string;
+  email?: string;
   avatar?: ImageProps;
-  column?: number;
+  description?: string;
 }
 
 export interface GlobalErrorProps {
   message?: string;
   status: boolean;
 }
+interface ListProps<P> {
+  [id: string]: P;
+}
 
 export interface GlobalDataProps {
   error: GlobalErrorProps;
   token: string;
-  column: ColumnProps[];
-  posts: PostProps[];
+  column: { data: ListProps<ColumnProps>; currentPage: number; total: number };
+  posts: { data: ListProps<PostProps>; loadedColumns: string[] };
   user: UserProps;
   loading: boolean;
+}
+
+export interface ResponseType<P = {}> {
+  code: number;
+  msg: string;
+  data: P;
 }
